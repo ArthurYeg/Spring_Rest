@@ -66,20 +66,8 @@
                                         <th>Delete</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr th:each="userFromList : ${listUser}">
-                                            <td id="idTd" th:text="${userFromList.getId()}"></td>
-                                            <td id="nameTd" th:text="${userFromList.getUsername()}"></td>
-                                            <td id="ageTd" th:text="${userFromList.getAge()}"></td>
-                                            <td id="emailTd" th:text="${userFromList.getEmail()}"></td>
-                                            <td id="roleTd" th:each="role : ${userFromList.getRoles()}" th:text="${role.getName()}"></td>
-                                            <td>
-                                                <button type="button" class="btn btn-primary editUser" data-toggle="modal" data-target="#editModal">Edit</button>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-danger deleteUser" data-toggle="modal" data-target="#myModalDelete">Delete</button>
-                                            </td>
-                                        </tr>
+                                    <tbody id="table">
+                                        <!--заполняется с помощью js-->
                                     </tbody>
                                 </table>
                             </div>
@@ -125,7 +113,7 @@
                         <div class="row bg-white" >
                             <div class="col-6 mx-auto text-center font-weight-bold">
                                 Email
-                                <input type="email" name="email"  id="emailInput" class="form-control"></div>
+                                <input type="email" name="email" id="emailInput" class="form-control"></div>
                         </div>
 
                         <div class="row bg-white" >
@@ -221,6 +209,44 @@
             }
         })
     }
+    //обновить table
+    $(document).ready(refreshTable());
+    function refreshTable() {
+        $("#table").empty();
+        $.ajax({
+            type: 'POST',
+            url: '/api/admin',
+            timeout: 3000,
+            success: function (data) {
+                console.log(data);
+                $.each(data, function (i, user) {
+                    $("#table").append($('<tr>').append(
+                            $('<td>').append($('<span>')).text(user.id),
+                            $('<td>').append($('<span>')).text(user.name),
+                            $('<td>').append($('<span>')).text(user.age),
+                            $('<td>').append($('<span>')).text(user.email),
+                            $('<td>').append($('<span>')).text(user.roles[0].name),
+                            $('<td>').append($('<button>').text("Edit").attr({
+                                "type": "button",
+                                "class": "btn btn-primary editUser",
+                                "data-toggle": "modal",
+                                "data-target": "#editModal",
+
+                            })
+                                .data("user", user)),
+                            $('<td>').append($('<button>').text("Delete").attr({
+                                "type": "button",
+                                "class": "btn btn-danger deleteUser",
+                                "data-toggle": "modal",
+                                "data-target": "#myModalDelete",
+                            })
+                                .data("user", user))
+                        )
+                    );
+                });
+            }
+        });
+    }
 
     //для модального окно при изменении
     on(document, 'click', '.editUser', (e) => {
@@ -240,14 +266,14 @@
     on(document, 'click', '.editBtn', (e) => {
         let formData = $(".formEditUser").serializeArray();
         $.ajax({
-            url: '/admin/edit?id='+$('#idInput').val(),
+            url: 'api/admin/edit?id='+$('#idInput').val(),
             method: 'PUT',
             data: formData,
             success: function () {
-                window.location.href = "/admin"
+                refreshTable();
             },
             error: function (xhr, type, exception) {
-                window.location.href = "/admin"
+                prompt("type: " + type + "\nexception: " + exception);
             },
         });
     })
@@ -271,13 +297,13 @@
 
     on(document, 'click', '.deleteBtn', (e) => {
         $.ajax({
-            url: '/admin/delete?id='+$('#idDelete').val(),
+            url: 'api/admin/delete?id='+$('#idDelete').val(),
             method: 'DELETE',
             success: function () {
-                window.location.href = "/admin"
+                refreshTable();
             },
             error: function (xhr, type, exception) {
-                window.location.href = "/admin"
+                prompt("type: " + type + "\nexception: " + exception);
             },
         });
     })

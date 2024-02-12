@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RegistrationService;
 import ru.kata.spring.boot_security.demo.services.RoleService;
@@ -14,7 +13,6 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 import ru.kata.spring.boot_security.demo.util.UserValidate;
 
 import javax.validation.Valid;
-import java.util.Collections;
 
 @Controller
 @RequestMapping("/admin")
@@ -39,12 +37,6 @@ public class AdminController {
         return "admin/users";
     }
 
-    @GetMapping("/show")
-    public String show(@RequestParam(value = "id") int id, Model model) {
-        model.addAttribute("user", userService.show(id));
-        return "admin/show";
-    }
-
     @GetMapping("/new")
     public String newUser(Model model) {
         model.addAttribute("user", new User());
@@ -62,25 +54,5 @@ public class AdminController {
 
         registrationService.register(user);
         return "redirect:admin";
-    }
-
-    @PutMapping("/edit")
-    public String update(@RequestParam(value = "id") int id, String name, String password, String email, int age, String role) {
-        User user = new User();
-        user.setPassword(password.length() < 3 ? userService.show(id).getPassword() : registrationService.encodePassword(password));
-        user.setName(name);
-        user.setAge(age);
-        user.setEmail(email);
-        Role newRole = new Role("ROLE_"+role);
-        user.setRoles(Collections.singleton(newRole));
-        roleService.save(newRole);
-        userService.update(id, user);
-        return "redirect:/admin";
-    }
-
-    @DeleteMapping("/delete")
-    public String delete(@RequestParam(value = "id") int id) {
-        userService.delete(id);
-        return "redirect:/admin";
     }
 }

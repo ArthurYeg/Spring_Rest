@@ -9,6 +9,8 @@
 
 <form class="form-group" th:method="POST" th:action="@{/auth/registration}" th:object="${user}">
     <div class="mx-auto my-5" style="width: 300px;">
+        <div class="col mx-3 border border-light" style="background-color: #92dceb">
+            <div style="text-align: center;">
         <label ><h3>Please sign up</h3></label>
 
         <input type="text" th:field="*{name}" id="name" class="form-control" placeholder="Username"/>
@@ -25,12 +27,15 @@
 
         <button type="submit" class="btn btn-primary my-2 btn-block signUp">Sign up</button>
     </div>
+    <div style="text-align: center;">
 </form>
 
 <script src="/webjars/jquery/3.4.1/jquery.min.js"></script>
 <script src="/webjars/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="/webjars/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-
+<div class="text-center mt-3">
+    <a href="/auth/login" class="btn btn-outline-primary">Back to Login</a>
+</div>
 </body>
 </html>

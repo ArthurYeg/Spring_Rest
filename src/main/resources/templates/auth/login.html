@@ -8,6 +8,8 @@
 <form class="form-group" action="/process_login" method="POST">
 
   <div class="mx-auto my-5" style="width: 300px;">
+    <div class="col mx-3 border border-light" style="background-color: #92dceb">
+      <div style="text-align: center;">
     <label ><h3>Login in</h3></label>
 
     <input type="text" id="login" name="username" class="form-control" placeholder="Username"/>
@@ -16,13 +18,15 @@
 
     <button type="submit" class="btn btn-primary my-2 btn-block signIn">Login in</button>
   </div>
-
+  <div style="text-align: center;">
 </form>
 
 <script src="/webjars/jquery/3.4.1/jquery.min.js"></script>
 <script src="/webjars/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="/webjars/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-
+<div class="text-center mt-3">
+  <a href="/auth/registration" class="btn btn-outline-primary">Back to Registration</a>
+</div>
 </body>
 </html>

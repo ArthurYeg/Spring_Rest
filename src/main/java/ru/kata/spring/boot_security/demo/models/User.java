@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+
+    // Поля экземпляра
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,12 +49,10 @@ public class User implements UserDetails {
             name = "users_roles",
             joinColumns = @JoinColumn(name = "users_id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id"))
-
     private Set<Role> roles;
 
-    public User() {
-
-    }
+    // Конструкторы
+    public User() {}
 
     public User(String username, String password, byte age, String email) {
         this.username = username;
@@ -61,16 +61,11 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public User(byte age,
-                String username,
-                String password,
-                String email) {
+    public User(byte age, String username, String password, String email) {
         this.age = age;
         this.username = username;
         this.password = password;
         this.email = email;
-
-
     }
 
     public User(String admin, String adminName, byte b, String s, String mail) {
@@ -81,6 +76,7 @@ public class User implements UserDetails {
         this.roles = new HashSet<>();
     }
 
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -129,6 +125,15 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
+    }
+
+    // Методы
     public String getAllUserRoles() {
         return roles.stream()
                 .map(role -> {
@@ -170,6 +175,11 @@ public class User implements UserDetails {
         return true;
     }
 
+    public boolean isPresent() {
+        return id != null;
+    }
+
+    // Переопределенные методы
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -190,11 +200,6 @@ public class User implements UserDetails {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-//                ", roles=" + roles +
                 '}';
-    }
-
-    public boolean isPresent() {
-        return id != null;
     }
 }

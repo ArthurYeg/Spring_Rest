@@ -10,6 +10,8 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
+
+    // Поля экземпляра
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -20,6 +22,9 @@ public class Role implements GrantedAuthority {
     @Transient
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
+
+    // Конструкторы
+    public Role() {}
 
     public Role(Long id) {
         this.id = id;
@@ -34,9 +39,7 @@ public class Role implements GrantedAuthority {
         this.roleName = roleName;
     }
 
-    public Role() {
-    }
-
+    // Геттеры и сеттеры
     public long getId() {
         return id;
     }
@@ -61,6 +64,7 @@ public class Role implements GrantedAuthority {
         this.users = users;
     }
 
+    // Переопределенные методы
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,3 +1,4 @@
+
 package ru.kata.spring.boot_security.demo.services;
 
 
@@ -12,29 +13,20 @@ import java.util.List;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleRepository roleRepository;
 
-    @Autowired
+    RoleRepository roleRepository;
+
     public RoleServiceImpl(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
     @Override
-    public List<Role> getSetOfRoles(List<String> rolesId) {
-        List<Role> roles = new ArrayList<>();
-        for (String id : rolesId) {
-            roles.add(getRoleById(Integer.parseInt(id)));
-        }
-        return roles;
+    public Role add(Role role) {
+        return roleRepository.save(role);
     }
 
     @Override
-    public Role getRoleById(int id) {
-        return roleRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public List<Role> getRoleList() {
+    public List<Role> findAll() {
         return roleRepository.findAll();
     }
 }

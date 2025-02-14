@@ -1,44 +1,40 @@
-package ru.kata.spring.boot_security.demo.configs;
 
+package ru.kata.spring.boot_security.demo;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
-import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import java.util.List;
 
-@Configuration
+import java.util.HashSet;
+import java.util.Set;
+
+@Component
 public class DataInitializer {
 
-    @Bean
-    public CommandLineRunner initData(UserServiceImpl userServiceImpl, RoleRepository roleRepository) {
-        return args -> {
-            Role userRole = new Role();
-            userRole.setName("ROLE_USER");
-            roleRepository.save(userRole);
+    private final UserRepository userRepository;
 
-            Role adminRole = new Role();
-            adminRole.setName("ROLE_ADMIN");
-            roleRepository.save(adminRole);
+    @Autowired
+    public DataInitializer(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-            User user = new User();
-            user.setUsername("user");
-            user.setPassword("123");
-            user.setAge(23);
-            user.setRoles(List.of(userRole));
-            userServiceImpl.addUser(user);
+    @Transactional
+    public void dataInitializer() {
+        Set<Role> roleAdmin = new HashSet<>();
+        Set<Role> roleUser = new HashSet<>();
+        roleAdmin.add(new Role("ROLE_ADMIN"));
+        roleUser.add(new Role("ROLE_USER"));
+        User admin = new User("admin", "admin_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "admin@mail.ru");
+        User user = new User("user", "user_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "user@mail.ru");
 
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword("123");
-            admin.setAge(23);
-            admin.setRoles(List.of(adminRole, userRole));
-            userServiceImpl.addUser(admin);
-        };
+        admin.setRoles(roleAdmin);
+        user.setRoles(roleUser);
+
+        userRepository.save(user);
+        userRepository.save(admin);
     }
 }
-

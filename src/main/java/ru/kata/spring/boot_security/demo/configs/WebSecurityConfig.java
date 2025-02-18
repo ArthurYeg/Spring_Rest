@@ -8,36 +8,44 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.kata.spring.boot_security.demo.CreateDemoUsers;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
-
-@Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final SuccessUserHandler successUserHandler;
-    private final UserServiceImpl userServiceImpl;
 
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserServiceImpl userServiceImpl) {
+    private final UserServiceImpl userService;
+    private final SuccessUserHandler successUserHandler;
+    private final CreateDemoUsers createDemoUsers;
+
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserServiceImpl userService, CreateDemoUsers createDemoUsers) {
         this.successUserHandler = successUserHandler;
-        this.userServiceImpl = userServiceImpl;
+        this.userService = userService;
+        this.createDemoUsers = createDemoUsers;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/index").permitAll()
-                .antMatchers("/user", "/porn").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/login/**", "/logout").permitAll()
+                .antMatchers("/api/user").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/api/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().successHandler(successUserHandler)
+                .formLogin()
+                .loginPage("/login")
+                .usernameParameter("email")
+                .successHandler(successUserHandler)
                 .permitAll()
                 .and()
                 .logout()
                 .permitAll()
+                .logoutSuccessUrl("/login")
                 .and()
-                .csrf().disable();
-
+                .exceptionHandling()
+                .accessDeniedHandler((request, response, accessDeniedException) ->
+                        response.sendRedirect("/login"));
     }
 
     @Bean
@@ -47,9 +55,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        authenticationProvider.setUserDetailsService(userServiceImpl);
-        return authenticationProvider;
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(userService);
+        createDemoUsers.createDemoUsers();
+        return daoAuthenticationProvider;
     }
 }

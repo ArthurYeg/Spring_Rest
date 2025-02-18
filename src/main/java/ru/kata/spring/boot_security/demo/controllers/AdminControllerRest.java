@@ -5,56 +5,79 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
+import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api")
 public class AdminControllerRest {
 
-    private final UserServiceImpl userServiceImpl;
-
+    private UserService userService;
+    private RoleService roleService;
 
     @Autowired
-    public AdminControllerRest(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+    public AdminControllerRest(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
     }
 
-    @GetMapping("/admin")
-    public ResponseEntity<List<User>> allUsersRest() {
-        List<User> users = userServiceImpl.listUser ();
-        if (users.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Возвращаем 204, если пользователей нет
-        }
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getUsers() {
+        final List<User> users = userService.getAllUsers();
+        return users != null && !users.isEmpty()
+                ? new ResponseEntity<>(users, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping
-    public ResponseEntity<User> navBar() {
-        return new ResponseEntity<>(userServiceImpl.findByUsername(userServiceImpl.getCurrentUsername()), HttpStatus.OK);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        final User user = userService.getUserById(id);
+        return user != null
+                ? new ResponseEntity<>(user, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/admin/{id}")
-    public ResponseEntity<User> update(@PathVariable("id") int id, @RequestBody User user) {
-        String oldPass = userServiceImpl.getUserById(id).getPassword();
-        if (oldPass.equals(user.getPassword())) {
-            user.setPassword(oldPass);
-            userServiceImpl.updateUser(user);
-        } return new ResponseEntity<>(user, HttpStatus.OK);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getRoles() {
+        final List<Role> roles = roleService.findAll();
+        return roles != null
+                ? new ResponseEntity<>(roles, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/admin/{id}")
-    public ResponseEntity<Integer> delete(@PathVariable("id") int id) {
-        userServiceImpl.removeUser(id);
-        return new ResponseEntity<>(id, HttpStatus.OK);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/users")
+    public ResponseEntity<String> createUser(@RequestBody User user) {
+        userService.createUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("admin")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        userServiceImpl.addUser(user);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/users")
+    public ResponseEntity<HttpStatus> updateUser(@RequestBody User user) {
+        final boolean update = userService.editUser(user);
+        return update
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
+        final boolean deleted = userService.deleteUser(id);
+        return deleted
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 }

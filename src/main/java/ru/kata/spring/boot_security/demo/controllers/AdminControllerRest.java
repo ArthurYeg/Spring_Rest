@@ -37,7 +37,7 @@ public class AdminControllerRest {
         return new ResponseEntity<>(userServiceImpl.findByUsername(userServiceImpl.getCurrentUsername()), HttpStatus.OK);
     }
 
-    @PutMapping("/api/admin/{id}")
+    @PutMapping("/admin/{id}")
     public ResponseEntity<User> update(@PathVariable("id") int id, @RequestBody User user) {
         String oldPass = userServiceImpl.getUserById(id).getPassword();
         if (oldPass.equals(user.getPassword())) {
@@ -46,13 +46,13 @@ public class AdminControllerRest {
         } return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/admin/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<Integer> delete(@PathVariable("id") int id) {
         userServiceImpl.removeUser(id);
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
-    @PostMapping("/api/admin")
+    @PostMapping("admin")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         userServiceImpl.addUser(user);
         return new ResponseEntity<>(user, HttpStatus.OK);

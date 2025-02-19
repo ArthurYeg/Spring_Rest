@@ -9,12 +9,10 @@ async function getRoles() {
 function listRoles() {
     let tmp = '';
     getRoles().then(roles => {
-        // Используем Set для хранения уникальных значений
         const uniqueRoles = new Set();
 
         roles.forEach(role => {
-            // Добавляем только уникальные роли
-            const roleName = role.roleName.substring(5); // Убираем "ROLE_" из названия
+            const roleName = role.roleName.substring(5);
             if (!uniqueRoles.has(roleName)) {
                 uniqueRoles.add(roleName);
                 tmp += `<option value="${role.id}">${roleName}</option>`;
@@ -195,4 +193,28 @@ async function deleteUser() {
 
 function closeModal() {
     document.querySelectorAll(".btn-close").forEach((btn) => btn.click());
+
 }
+
+
+const validate = async () => {
+    const users = await fetch("/api/users");
+    const btnAdd = document.getElementById("btnAdd");
+    const errorMessageEmail = document.getElementById("errorMessageEmail");
+    const emails= users.map(user => user.email);
+    const input = document.getElementById(inputEmail);
+    let isContains = emails.includes(input.value);
+
+    if (isContains) {
+        if (btnAdd) {
+            btnAdd.disabled = true;
+            errorMessageEmail.style.display = "inline"
+        }
+    } else {
+        btnAdd.disabled = false;
+        errorMessageEmail.style.display = "none"
+    }
+
+}
+
+document.getElementById("inputEmail").addEventListener('onchange', validate);

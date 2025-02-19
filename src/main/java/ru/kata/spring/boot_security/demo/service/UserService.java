@@ -32,4 +32,6 @@ public interface UserService {
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
     Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles);
+
+    void add(User admin);
 }

@@ -37,17 +37,17 @@ public class CreateDemoUsers {
         userRoles.add(userRole);
 
         User admin = new User("admin", "adm Sec-name", (byte) 20,
-                "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2",
+                "123",
                 "admin@mail.ru");
         User user = new User("user", "user Sec-name", (byte) 20,
-                "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2",
+                "123",
                 "user@yandex.ru");
 
-        adminRoles.add(userRole);
+
         admin.setRoles(adminRoles);
         user.setRoles(userRoles);
 
-//        userService.createUser(admin);
+        userService.createUser(admin);
         userService.createUser(user);
     }
 }

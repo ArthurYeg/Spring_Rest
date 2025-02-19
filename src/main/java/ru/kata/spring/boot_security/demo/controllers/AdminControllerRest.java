@@ -20,8 +20,8 @@ import java.util.List;
 @RequestMapping("/api")
 public class AdminControllerRest {
 
-    private UserService userService;
-    private RoleService roleService;
+    private  UserService userService;
+    private  RoleService roleService;
 
     @Autowired
     public AdminControllerRest(UserService userService, RoleService roleService) {

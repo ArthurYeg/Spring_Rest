@@ -42,7 +42,7 @@ public class CreateDemoUsers {
                 "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2",
                 "user@mail.ru");
 
-        roleAdmin.add(userRole);
+//        roleAdmin.add(userRole);
         admin.setRoles(roleAdmin);
         user.setRoles(roleUser);
 

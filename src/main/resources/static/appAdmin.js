@@ -8,18 +8,25 @@ async function getRoles() {
 
 function listRoles() {
     let tmp = '';
-    getRoles().then(roles =>
+    getRoles().then(roles => {
+        // Используем Set для хранения уникальных значений
+        const uniqueRoles = new Set();
+
         roles.forEach(role => {
-            tmp += `<option value="${role.id}">${role.roleName.substring(5)}</option>`;
-        })
-    ).then(() => {
+            // Добавляем только уникальные роли
+            const roleName = role.roleName.substring(5); // Убираем "ROLE_" из названия
+            if (!uniqueRoles.has(roleName)) {
+                uniqueRoles.add(roleName);
+                tmp += `<option value="${role.id}">${roleName}</option>`;
+            }
+        });
+    }).then(() => {
         console.log('listRoles');
         document.getElementById('editRoles').innerHTML = tmp;
         document.getElementById('deleteRoles').innerHTML = tmp;
         document.getElementById('rolesNewUser').innerHTML = tmp;
     });
 }
-
 listRoles();
 
 function getUsersData() {

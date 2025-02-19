@@ -33,5 +33,4 @@ public interface UserService {
 
     Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles);
 
-    void add(User admin);
 }

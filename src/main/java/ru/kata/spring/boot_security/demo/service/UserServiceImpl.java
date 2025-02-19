@@ -73,10 +73,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             user.setRoles(roles);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
-            return true;
-        } else {
-            return false;
+
         }
+        return true;
     }
 
     @Override
